@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Albums</h2>
+<form method="get" class="search">
+    <input name="q" value="{{ q }}" placeholder="Enter Artist Name or Album Name">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <button>Search</button>
+</form>
+<table class="album-table">
+    <colgroup>
+        <col style="width: 60px;">
+        <col style="width: 110px;">
+        <col style="width: 100px;">
+        <col style="width: 150px;">
+        <col>
+        <col>
+        <col>
+        <col>
+    </colgroup>
+    
+    <thead><tr><th></th><th></th><th>Title</th><th>Artist</th><th style="white-space: nowrap;">Average Rating</th><th>Raters</th><th style="white-space: nowrap;">Release Date</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for a in albums %}
+        <tr>
+            <td><button type="button" class="album-toggle" onclick="toggle_tracks('{{a.album_id}}')">▼</button></td>
+            <td><img src="{{ a.cover_image_url }}", alt = "Cover art for {{ a.album_name }}"
+                width = 100></td>
+            <td>{{ a.album_name }}</td>
+            <td>{{ a.artist_name }}</td>
+            <td>{{ a.avg_rating }}</td>
+            <td>{{ a.num_ratings }}</td>
+            <td>{{ a.release_date.strftime('%Y-%m-%d') if a.release_date else 'N/A' }}</td>
+            <td><a class = "btn" href = "{{ url_for('edit_album', album_id=a.album_id) }}" style="white-space: nowrap;">Edit Album</a></td>
+        </tr>
+
+        <tr id="tracks-{{a.album_id}}" hidden>
+            <td colspan="8">
+                <ul class="track-list">
+                    <table><thead><tr><th>Tracks in {{ a.album_name }}</th></tr></thead>
+                        <tbody>
+                            {% for song in a.songs %}
+                            <tr>
+                                <td>
+                                    <span class="track-number">{{ song.track_number }}</span>
+                                    <span>●</span>
+                                    <span>{{ song.song_name }}</span>
+                                </td>
+                            {% else %}
+                                <td>
+                                    No tracks added yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function toggle_tracks(albumId) {
+    const row = document.getElementById("tracks-" + albumId);
+    row.hidden = !row.hidden;
+}
+</script>
+
+{% endblock %}

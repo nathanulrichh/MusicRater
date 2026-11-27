@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Songs</h2>
+<form method="get" class="search">
+    <input name="q" value="{{ q }}" placeholder="Enter Song, Artist, or Album Name">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <button>Search</button>
+</form>
+<table class="album-table">
+    <colgroup>
+        <col style="width: 110px;">
+        <col style="width: 100px;">
+        <col style="width: 150px;">
+        <col>
+        <col>
+        <col>
+        <col>
+    </colgroup>
+    
+    <thead></th><th></th><th>Song</th><th>Album</th><th>Artist</th><th>Runtime</th><th style="white-space: nowrap;">Average Rating</th>
+        <th>Raters</th><th style="white-space: nowrap;">Release Date</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for s in songs %}
+        <tr>
+            <td><img src="{{ s.cover_image_url }}", alt = "Cover art for {{ s.album_name }}"
+                width = 100></td>
+            <td>{{ s.song_name }}</td>
+            <td>{{ s.album_name }}</td>
+            <td>{{ s.artist_name }}</td>
+            <td>{{ s.duration_seconds // 60 }}:{{ s.duration_seconds % 60 }}</td>
+            <td>{{ s.avg_rating }}</td>
+            <td>{{ s.num_ratings }}</td>
+            <td>{{ s.release_date }}</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

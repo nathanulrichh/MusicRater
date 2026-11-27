@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MusicRater - A Music Rating Platform</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>MusicRater</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Users</a>
+      <a href="{{ url_for('artists') }}">Artist List</a>
+      <a href="{{ url_for('albums') }}">Album List</a>
+      <a href="{{ url_for('songs') }}">Song List</a>
+      <a href="{{ url_for('create') }}">Add user</a>
+      <a href="{{ url_for('add_album') }}">Add an Album</a>
+      <a href="{{ url_for('add_artist') }}">Add an Artist</a>
+      <a href="{{ url_for('add_album_rating') }}">Make a Rating</a>
+      <a href="{{ url_for('report') }}">User Report</a>
+      <a href="{{ url_for('top_music') }}">View Top Music</a>
+    </nav>
+  </header>
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

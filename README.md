@@ -1,127 +1,65 @@
-# MusicRater
+# User Manager: Flask + MySQL CRUD Demo
+https://gitlab.csi.miamioh.edu/zhengw22/cse385a_databasesystem_demo
 
-MusicRater is a full-stack music rating and discovery web application built using Python, Flask and MySQL. The application allows users to explore artists, albums and tracks, submit album ratings and manage music records through an interactive web interface.
 
-Developed as part of CSE 385 at Miami University, this project emphasizes relational database design, data management and full-stack development.
+A small web application for a database systems course. It can **add**, **update**,
+and **remove** users, list them with search and sort, and show a **report** (totals,
+users by role, recent sign-ups, CSV export).
 
-## Features
+## Quick start
 
-- Browse and search artists, albums and tracks
-- Submit and view album ratings
-- Add, edit and manage database records
-- Display album cover art and release dates
-- Expand album listings to view individual tracks
-- Search and sort music records
-- Manage user information
+```bash
+# 1. Create database, table, sample data and a least-privilege account
+mysql -u root -p < schema.sql
 
-## Technologies Used
+# 2. Python environment
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 
-| Technology | Purpose |
-|---|---|
-| Python | Backend application logic |
-| Flask | Web application framework |
-| MySQL | Relational database management |
-| SQL | Data retrieval and manipulation |
-| HTML | Web page structure |
-| CSS | User interface styling |
-| JavaScript | Interactive interface components |
-| Jinja2 | Dynamic HTML templating |
-| MySQL Connector | Database connectivity |
-| Git/GitHub | Version control and collaboration |
+# 3. Configuration (credentials stay out of source code)
+cp .env.example .env              # edit values if you changed the password
 
-## Database Design
+# 4. Run
+python app.py                     # open http://127.0.0.1:5000
+```
 
-MusicRater utilizes a relational MySQL database designed around Third Normal Form (3NF) to minimize data redundancy and maintain data integrity.
+Check the connection at `http://127.0.0.1:5000/health`.
 
-### Database Entities
+## Where each concept lives (`app.py`)
 
-- Users
-- Artists
-- Albums
-- Songs
-- Album Ratings
 
-### Database Concepts
+| Concept                           | Location                                       |
+| --------------------------------- | ---------------------------------------------- |
+| Connection pooling                | `pooling.MySQLConnectionPool(...)`             |
+| Safe execute / release / rollback | `run()`                                        |
+| Parameterized queries             | every`run(...)` call; values passed separately |
+| Identifier whitelist (ORDER BY)   | `SORTABLE` and `index()`                       |
+| CREATE / READ / UPDATE / DELETE   | `create()`, `index()`, `edit()`, `delete()`    |
+| Aggregation report                | `report()` (`COUNT`, `SUM`, `GROUP BY`)        |
+| Constraint to friendly error      | `db_error_message()` (duplicate email)         |
+| CSRF and POST-only deletes        | `verify_csrf()`, `delete()`                    |
 
-- Primary and foreign keys
-- Relational database normalization (1NF, 2NF, 3NF)
-- Referential integrity
-- SQL joins and aggregation
-- Parameterized SQL queries
-- CRUD operations
-- Database connection pooling
-- One-to-many relationships
+## Student exercises
 
-## Application Architecture
+1. Add pagination with `LIMIT` / `OFFSET`.
+2. Add a `departments` table with a foreign key and show it in the report.
+3. Replace hard delete with soft delete (`deleted_at`).
+4. Run `EXPLAIN` on the search query; add an index and compare.
+5. Break it on purpose: build one query with an f-string, then attack it.
 
-MusicRater follows a three-tier application architecture:
+## Troubleshooting
 
-| Layer | Technologies | Responsibility |
-|---|---|---|
-| Presentation | HTML, CSS, JavaScript, Jinja2 | User interface |
-| Application | Python, Flask | Backend logic and routing |
-| Data | MySQL, SQL | Data storage and management |
+- *Access denied*: password in `.env` must match `schema.sql`.
+- *Can't connect*: is MySQL running, and are host and port correct?
+- *Too many connections*: a code path forgot to release its connection.
 
-## Getting Started
+## Demo pages
 
-### Prerequisites
+Home page: ![Home page](.\images\index.png)
+Add user: ![Home page](.\images\add_user.png)
+Report: ![Report](.\images\report.png)
 
-- Python 3
-- MySQL 8.0
-- Git
-- pip
 
-### Installation
-
-1. Clone the repository.
-
-2. Install the required dependencies:
-
-   ```bash
-   pip install flask mysql-connector-python
-   ```
-
-3. Create the MySQL database using the database schema provided in the repository.
-
-4. Populate the database with the provided sample data.
-
-5. Configure the database connection using the appropriate environment variables.
-
-6. Start the Flask application.
-
-   ```bash
-   flask run
-   ```
-
-7. Open the application in your browser.
-
-   ```
-   http://127.0.0.1:5000
-   ```
-
-## Project Objectives
-
-- Design and implement a normalized relational database
-- Develop a functional full-stack web application
-- Implement efficient SQL queries for data retrieval and manipulation
-- Maintain data consistency and referential integrity
-- Provide an intuitive interface for interacting with relational data
-- Gain practical experience with database-driven software development
-
-## Future Improvements
-
-- [ ] External music API integration
-- [ ] Personalized music recommendation system
-- [ ] Advanced search and filtering
-- [ ] User listening profiles and rating histories
-- [ ] Album and artist popularity rankings
-- [ ] Interactive data visualization dashboards
-- [ ] Statistical analysis of user rating patterns
-- [ ] Machine learning-based music recommendations
-
-## Academic Context
-
-This application was developed as a collaborative final project for CSE 385: Database Systems at Miami University.
-
-The project combines relational database modeling, SQL programming, database management and full-stack software development into a single functional application.
-
+Educational demo: before real deployment add authentication, HTTPS, TLS to the
+database, and a production WSGI server (e.g. gunicorn).

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="rating-grid">
+    <div class="card">
+        <h2>Rate an Album</h2>
+        <form class="card" method="post" action="{{ url_for('add_album_rating') }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <label>User
+                <select name="user_id">
+                    <option required value selected disabled>-- Select a User --</option>
+                    {% for user in users %}
+                        <option value="{{ user.user_id }}">
+                            {{ user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Album Title
+                <select name="album_id">
+                    <option required value selected disabled>-- Select an Album --</option>
+                    {% for album in albums %}
+                        <option value="{{ album.album_id }}">
+                            {{ album.album_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Your Rating
+                <input name="album_rating" placeholder="Enter your rating (0.0 - 10.0)">
+            </label>
+            <button type="submit">Submit Your Rating</button>
+            <a href="{{ url_for('albums') }}" class="btn" style="text-align: center;">Cancel</a>
+        </form>
+    </div>
+    <div class="card">
+        <h2>Rate a Song</h2>
+        <form method="post" class="card" action="{{ url_for('add_song_rating') }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <label>User
+                <select name="user_id">User
+                    <option required value selected disabled>-- Select a User --</option>
+                    {% for user in users %}
+                        <option value="{{ user.user_id }}">
+                            {{ user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Album
+                <select name="album_id"  id="song-album-select" required>
+                    <option required value selected disabled>-- Select an Album --</option>
+                    {% for album in albums %}
+                        <option value="{{ album.album_id }}">
+                            {{ album.artist_name }} - {{ album.album_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Song
+                <select name="song_id" id="song-select">
+                    <option required value selected disabled>-- Select an Album, then a Song --</option>
+                    {% for song in songs %}
+                        <option value="{{ song.song_id }}"
+                                data-album-id="{{ song.album_id }}">
+                            {{ song.song_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Your Rating
+                <input name="song_rating" placeholder="Enter your rating (0.0 - 10.0)">
+            </label>
+            <button type="submit">Submit Your Rating</button>
+            <a href="{{ url_for('albums') }}" class="btn" style="text-align: center;">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const albumSelect = document.getElementById("song-album-select");
+    const songSelect = document.getElementById("song-select");
+
+    // Save all songs before clearing the dropdown
+    const allSongs = Array.from(
+        songSelect.querySelectorAll("option[data-album-id]")
+    );
+
+    // Start with no songs displayed
+    songSelect.innerHTML =
+        '<option value="">-- Select an Album First --</option>';
+
+    songSelect.disabled = true;
+
+    albumSelect.addEventListener("change", function() {
+        const selectedAlbum = albumSelect.value;
+
+        songSelect.innerHTML =
+            '<option value="">-- Select a Song --</option>';
+
+        const matchingSongs = allSongs.filter(
+            song => song.dataset.albumId === selectedAlbum
+        );
+
+        matchingSongs.forEach(function(song) {
+            songSelect.appendChild(song.cloneNode(true));
+        });
+
+        songSelect.disabled = matchingSongs.length === 0;
+    });
+});
+</script>
+{% endblock %}

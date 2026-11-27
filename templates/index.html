@@ -1,0 +1,105 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<form method="get" class="search">
+    <input name="q" value="{{ q }}" placeholder="Search name or email">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <button>Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th><a href="?sort=name&q={{ q }}">Name</a></th>
+            <th><a href="?sort=email&q={{ q }}">Email</a></th>
+            <th><a href="?sort=joined&q={{ q }}">Joined</a></th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for u in users %}
+        <!-- User information -->
+        <tr>
+            <td>
+                <button type="button"
+                        class="album-toggle"
+                        onclick="toggle_ratings('{{ u.user_id }}')">
+                    ▼
+                </button>
+            </td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+                {{ u.date_joined.strftime('%Y-%m-%d')
+                   if u.date_joined else 'N/A' }}
+            </td>
+            <td class="actions">
+                <a class="btn"
+                   href="{{ url_for('edit', user_id=u.user_id) }}">
+                    Edit
+                </a>
+
+                <form method="post"
+                      action="{{ url_for('delete', user_id=u.user_id) }}"
+                      onsubmit="return confirm('Remove this user?')">
+                    <input type="hidden"
+                           name="_csrf"
+                           value="{{ csrf_token() }}">
+                    <button class="danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+
+        <!-- User's album ratings -->
+        <tr id="ratings-{{ u.user_id }}" hidden>
+            <td colspan="6">
+                <strong>{{ u.username }}'s Album Ratings</strong>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Album</th>
+                            <th>Rating</th>
+                            <th>Date Rated</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for rating in u.ratings %}
+                        <tr>
+                            <td>{{ rating.album_name }}</td>
+                            <td>{{ rating.rating }}</td>
+                            <td>
+                                {{ rating.created_at.strftime('%Y-%m-%d')
+                                   if rating.created_at else 'N/A' }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3">No album ratings yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        {% else %}
+        <tr>
+            <td colspan="6">No users found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function toggle_ratings(userId) {
+    const row = document.getElementById("ratings-" + userId);
+    row.hidden = !row.hidden;
+}
+</script>
+
+{% endblock %}

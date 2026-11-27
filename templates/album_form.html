@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ mode }} {{ album.album_name if mode == 'Edit' else 'Album' }}</h2>
+    <form method = "post" class = "card">
+        <input type = "hidden" name = "_csrf" value = "{{ csrf_token() }}">
+        <label>Album Title
+            <input name = "album_name" maxlength = "50" 
+                {% if mode == 'Add' %}required{% endif %}>
+        </label>
+        <label>Artist
+            <select name="artist_id">
+                {% if mode == 'Add' %}<option required value selected disabled>-- Select an Artist --</option>{% endif %}
+                    {% for artist in artists %}
+                        <option value="{{ artist.artist_id }}"
+                            {% if mode == 'Edit' and artist.artist_id == album.artist_id %}
+                                selected
+                            {% endif %}>
+                            {{ artist.artist_name }}
+                        </option>
+                    {% endfor %}
+            </select>
+        </label>
+        <label style="white-space: nowrap;">Release Date
+            <input name = "release_date" type = "date">
+        </label>
+        <label>Album Cover Link
+            <input name = "cover_image_url" type = "url" placeholder = "Enter image URL">
+        </label>
+        <button>{{ 'Save Changes' if mode == "Edit" else 'Add Album'  }}</button>
+        <a class = "btn" style = "text-align: center;" href = "{{ url_for('albums') }}">Cancel</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Top Rated Music</h2>
+<h3>Top Rated Albums</h3>
+<div class="top-grid">
+    <div>
+        <table>
+            <thead><tr><th></th><th></th><th>Album</th><th>Artist</th><th style="white-space: nowrap;">Average Rating</th><th style="white-space: nowrap;">Number of Raters</th></tr></thead>
+            <tbody>
+                {% for a in albums %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><img src="{{ a.cover_image_url }}", alt="Cover art for {{ a.album_name }}" width="100"></td>
+                        <td>{{ a.album_name }}</td>
+                        <td>{{ a.artist_name }}</td>
+                        <td>{{ a.avg_rating }}</td>
+                        <td>{{ a.num_ratings }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table>
+            <thead><th></th><th></th><th>Song</th><th>Album</th><th>Artist</th><th style="white-space: nowrap;">Average Rating</th><th style="white-space: nowrap;">Number of Raters</th></thead>
+            <tbody>
+                {% for s in songs %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><img src="{{ s.cover_image_url }}", alt="Cover art for {{ s.album_name }}" width="100"></td>
+                    <td>{{ s.song_name }}</td>
+                    <td>{{ s.album_name }}</td>
+                    <td>{{ s.artist_name }}</td>
+                    <td>{{ s.avg_rating }}</td>
+                    <td>{{ s.num_ratings }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

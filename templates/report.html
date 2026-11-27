@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>User Report</h2>
+<div class="stats">
+  <div class="stat"><span>{{ totals.total }}</span>Total users</div>
+</div>
+
+<h3>Most recent sign-ups</h3>
+<table>
+  <thead><tr><th>Username</th><th>Email</th><th>Joined</th></tr></thead>
+  <tbody>
+  {% for u in recent %}
+    <tr><td>{{ u.username }}</td><td>{{ u.email }}</td>
+        <td>{{ u.date_joined.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a class="btn" href="{{ url_for('report_csv') }}">Download CSV</a></p>
+
+<h3>SQL Report Example</h3>
+<!-- ========================================================= -->
+<!-- START: SQL Report Display Section -->
+<!-- ========================================================= -->
+{% if sql_report_data %}
+<div class="sql-report-container mt-5 p-4 border rounded-lg bg-light">
+    <h2>User table report</h2>
+    <p class="text-muted">The following table displays the results of the executed SELECT query.</p>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="sqlDataTable">
+            <thead class="table-dark">
+                <tr>
+                    {% for column_name in sql_report_data[0].keys() %}
+                        <th scope="col" class="text-uppercase text-sm font-bold tracking-wider">{{ column_name|replace("_", " ")|title }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {# Iterate over the list of results (rows) #}
+                {% for row in sql_report_data %}
+                <tr>
+                    {# Iterate over the values in the current row, corresponding to the columns #}
+                    {% for cell_value in row.values() %}
+                    <td class="align-middle">{{ cell_value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info mt-5" role="alert">
+    No data available to display for the SQL report.
+</div>
+{% endif %}
+<!-- ========================================================= -->
+<!-- END: SQL Report Display Section -->
+<!-- ========================================================= -->
+
+{% endblock %}

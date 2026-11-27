@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ mode }} user</h2>
+<form method="post" class="card">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>Username
+    <input name="username" value="{{ user.username or '' }}" maxlength="50" required>
+  </label>
+  <label>Email
+    <input name="email" type="email" value="{{ user.email or '' }}" maxlength="50" required>
+  </label>
+  <button>{{ 'Save changes' if mode == 'Edit' else 'Add user' }}</button>
+  <a class="btn" href="{{ url_for('index') }}" style="text-align: center;">Cancel</a>
+</form>
+{% endblock %}
